@@ -12,10 +12,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'  # Use the latest Node.js version
+    - name: Force Use Node.js 20.x (Remove Old Versions)
+      run: |
+        sudo apt-get purge -y nodejs npm
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        node -v
+        npm -v
 
     - name: Install Firebase CLI
       run: npm install -g firebase-tools
@@ -24,6 +27,5 @@ jobs:
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       run: |
-        firebase deploy --only hosting
-
+        firebase deploy --only hosting --project iot-dtu
 
