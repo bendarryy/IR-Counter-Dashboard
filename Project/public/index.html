@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IR Counter Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e2d;
+            color: #fff;
+        }
+
+        .dashboard {
+            background-color: #282a36;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        p {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #6272a4;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        button:hover {
+            background-color: #44475a;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>IR Counter Dashboard</h1>
+        <p><strong>Current Count:</strong> <span id="count">0</span></p>
+        <p><strong>Last Entry:</strong> <span id="last-entry">-</span></p>
+        <button onclick="resetCounter()">Reset Counter</button>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyDBFAVJgptXOZf_cOr8v2IYPFRLjoeETEQ",
+          authDomain: "iot-dtu.firebaseapp.com",
+          databaseURL: "https://iot-dtu-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "iot-dtu",
+          storageBucket: "iot-dtu.firebasestorage.app",
+          messagingSenderId: "946500909819",
+          appId: "1:946500909819:web:935d5c6484e0346b47ce5e"
+        };
+
+// Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+
+        const database = firebase.database();
+
+        // References
+        const countRef = database.ref("/IR_Counter/Count");
+        const lastEntryRef = database.ref("/IR_Counter/Last_Entry");
+
+        // Displaying Real-Time Data
+        countRef.on("value", (snapshot) => {
+            document.getElementById("count").innerText = snapshot.val();
+        });
+
+        lastEntryRef.on("value", (snapshot) => {
+            document.getElementById("last-entry").innerText = new Date(parseInt(snapshot.val())).toLocaleString();
+        });
+
+        // Reset Counter Function
+        function resetCounter() {
+            if (confirm("Are you sure you want to reset the counter?")) {
+                countRef.set(0);
+                lastEntryRef.set(Date.now());
+                alert("Counter has been reset!");
+            }
+        }
+    </script>
+</body>
+</html>
+
